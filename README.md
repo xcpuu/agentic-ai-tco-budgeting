@@ -1,5 +1,7 @@
 # Code and data: Attributing and Budgeting the Cost of Agentic AI Under Stated Uncertainty
 
+[![DOI](https://zenodo.org/badge/1420179673.svg)](https://doi.org/10.5281/zenodo.23384893)
+
 This package reproduces the numerical results in the paper: the budget-coverage pilot (E1, E1c) on public agent traces and the illustrative case study. Everything is deterministic (seed 20261004).
 
 Author: Xiaochao Pu (xcpu@umich.edu). Version 1.0.0. Code: MIT. Data tables: CC BY 4.0 (see `LICENSE`).
