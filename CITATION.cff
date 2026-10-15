@@ -7,8 +7,9 @@ authors:
   - family-names: Pu
     given-names: Xiaochao
     email: xcpu@umich.edu
+    orcid: "https://orcid.org/0009-0006-0069-3048"
 license: MIT
-repository-code: "https://github.com/REPLACE-WITH-YOUR-ACCOUNT/agentic-ai-tco-budgeting"
+repository-code: "https://github.com/xcpuu/agentic-ai-tco-budgeting"
 keywords:
   - total cost of ownership
   - agentic AI
