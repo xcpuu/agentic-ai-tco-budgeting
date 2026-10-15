@@ -1,0 +1,10 @@
+{
+  "title": "Code and data for 'Attributing and Budgeting the Cost of Agentic AI Under Stated Uncertainty'",
+  "upload_type": "software",
+  "description": "Scripts, per-task cost tables and result files that reproduce the budget-coverage pilot (E1, E1c) and the illustrative case study in the accompanying paper. Per-task costs are recomputed at dated list prices from public Holistic Agent Leaderboard traces; see data/PROVENANCE.md.",
+  "creators": [{"name": "Pu, Xiaochao"}],
+  "license": "mit",
+  "access_right": "open",
+  "keywords": ["total cost of ownership", "agentic AI", "cost attribution", "budgeting", "uncertainty quantification"],
+  "version": "1.0.0"
+}
