@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this package, please cite it and the accompanying paper."
+title: "Code and data for 'Attributing and Budgeting the Cost of Agentic AI Under Stated Uncertainty'"
+version: 1.0.0
+date-released: "2026-10-14"   # update to the release date
+authors:
+  - family-names: Pu
+    given-names: Xiaochao
+    email: xcpu@umich.edu
+license: MIT
+repository-code: "https://github.com/REPLACE-WITH-YOUR-ACCOUNT/agentic-ai-tco-budgeting"
+keywords:
+  - total cost of ownership
+  - agentic AI
+  - cost attribution
+  - budgeting
+  - uncertainty quantification

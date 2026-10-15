@@ -1,0 +1,236 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{times,booktabs,array,longtable,url,amsmath,microtype}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\large\bfseries}{S\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalfont\normalsize\itshape}{S\thesection.\arabic{subsection}}{0.5em}{}
+\renewcommand{\thesection}{\arabic{section}}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{document}
+\begin{center}
+{\Large\bfseries Supplementary Material}\\[4pt]
+{\large Attributing and Budgeting the Cost of Agentic AI Under Stated Uncertainty:\\ A Task-Level Total Cost of Ownership Model}\\[6pt]
+Xiaochao Pu \quad xcpu@umich.edu
+\end{center}
+
+This document supports the paper. S1 lists the case-study parameters, S2 the trace-processing rules, S3 the source register and the evidence behind each failure mechanism, and S4 the evaluation protocol history and the reproduction steps. Code and data are in the accompanying package (version 1.0.0).
+
+\section{Case-study parameters and outputs}
+The simulation (Section VI of the paper) draws 200{,}000 samples with seed 20261004. All inputs are assumptions chosen for illustration. Table~\ref{tab:params} gives every input, and the formulas follow.
+
+\begin{table}[h]
+\caption{Inputs of the case-study simulation}\label{tab:params}
+\centering\small
+\begin{tabular}{p{4.6cm}p{5.2cm}p{5.4cm}}
+\toprule
+Input & Distribution or value & Note \\
+\midrule
+Steady-state volume & 40{,}000 tickets/month $\times$ lognormal(0, 0.15) & One volume multiplier per draw \\
+Ramp & Month 1: 1/3; month 2: 2/3; then 1 & 36-month horizon \\
+Median tokens per ticket & 140{,}000 $\times$ lognormal(0, 0.40) & Deployment-level uncertainty \\
+Per-ticket spread & lognormal, $\sigma=\ln 3/1.645=0.668$ & 90\% of tickets within a factor of 3 of the median; mean = median $\times e^{\sigma^2/2}$ \\
+Blended price & 85\% input at \$2.00, 15\% output at \$12.00 per million tokens $=\$3.50$ & October 2026 list prices \\
+Price-capture multiplier $m$ & Triangular(0.30, 0.70, 1.00) & Year 1: 1; year 2: $m$; year 3: $m^2$ \\
+Failure rate & Beta(6, 94), mean 6\% & Share of tickets needing correction \\
+Correction cost per failed ticket & Triangular(\$3, \$6, \$12) & Applied to every failed ticket \\
+Drift migrations & $36/\mathrm{cycle}$ events, cycle $\sim$ Uniform(12, 18) months & Cost per event Triangular(\$20k, \$35k, \$70k) \\
+Strategy and selection (one-time) & Triangular(\$12.0k, \$18.4k, \$30.0k) & \\
+Implementation (one-time) & Triangular(\$60k, \$86k, \$130k) & \\
+Support (per year) & Triangular(\$18k, \$22k, \$35k) & Drawn separately each year \\
+Measurement setup (one-time) & Triangular(\$25k, \$40k, \$70k) & \\
+Measurement run (per year) & Triangular(\$15k, \$25k, \$45k) & Drawn separately each year \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Formulas.} With $V_y$ the tickets in year $y$, $\bar{k}$ the mean tokens per ticket, $p_0$ the blended price and $m_y$ the price multiplier ($m_1=1$, $m_2=m$, $m_3=m^2$): inference$_y=V_y\,\bar{k}\,p_0\,m_y/10^6$; rework$_y=V_y\cdot f\cdot c$ with failure rate $f$ and correction cost $c$; drift $=(36/\mathrm{cycle})\times$ cost per event. Three-year TCO is the sum of inference, rework, drift, support, measurement, strategy and implementation. Inputs are drawn independently.
+
+\textbf{Outputs.} Three-year TCO: P5 \$1.06M, P50 \$1.60M, P95 \$2.53M; mean \$1.67M; P80 \$2.02M; P90 \$2.28M. A billing-only estimate (median tokens, flat list price, no rework, drift or measurement) is about \$0.87M. Per ticket, the median-token cost is \$0.49 and the mean \$0.61; the top 1\% of tickets account for 4.9\% of spend.
+
+\begin{table}[h]
+\caption{One-at-a-time sensitivity of median three-year TCO}\label{tab:sens}
+\centering\small
+\begin{tabular}{lrr}
+\toprule
+Input varied & Low case & High case \\
+\midrule
+Volume (tickets/month) & 20{,}000: \$1.01M & 80{,}000: \$2.78M \\
+Blended price & Low-tier (\$0.10/\$0.40): \$0.98M & Flagship (\$5/\$25): \$2.38M \\
+Median tokens per ticket & 70{,}000: \$1.29M & 280{,}000: \$2.21M \\
+Failure rate & 3\%: \$1.31M & 10\%: \$1.99M \\
+Correction cost & Halved: \$1.31M & Doubled: \$2.15M \\
+Price-capture multiplier & (0.5, 0.9, 1.0): \$1.70M & (0.15, 0.4, 0.7): \$1.44M \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Unit cost.} Accepted outcomes are tickets not reopened within 30 days (acceptance rate 94\%). With shared cost allocated in proportion to accepted outcomes, median cost per accepted outcome is \$0.90 avoidable and \$1.22 fully loaded. A 7-day window with a 4\% failure rate gives \$0.74 and \$1.05.
+
+\section{Trace processing and cost rules}
+\subsection{Sources and scope}
+Per-task costs come from Holistic Agent Leaderboard (HAL) traces, downloaded on 11 October 2026. Table~\ref{tab:data} lists the sets. File names, run IDs and SHA-256 hashes are in \texttt{data/PROVENANCE.md}. Each task has one run.
+
+\begin{table}[h]
+\caption{Data sets used in the pilot}\label{tab:data}
+\centering\small
+\begin{tabular}{p{2.6cm}p{2.6cm}p{4.4cm}rp{3.6cm}}
+\toprule
+Benchmark & Agent scaffold & Model & Tasks & Groups \\
+\midrule
+USACO & Episodic + Semantic & DeepSeek V3, GPT-4.1, Gemini 2.0 Flash, Claude 3.7 Sonnet & 307 & bronze 123, silver 100, gold 63, platinum 21 \\
+SWE-bench Verified Mini & SWE-Agent v1.0 & DeepSeek V3, Gemini 2.0 Flash, Claude Opus 4.1 & 50 & sphinx 25, django 25 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Counting rule}
+HAL logs some calls twice: an inner provider span (for example an OpenAI or Anthropic record) nested under an outer \texttt{litellm} span. Counting both doubles tokens and cost. We count only the outer \texttt{litellm} span of each call. When the span summary carries provider usage we use it, and otherwise we use the output usage. Tasks are identified by the \texttt{weave\_task\_id} attribute.
+
+\subsection{Pricing rule}
+Cost is tokens times the dated list price in Table~\ref{tab:prices}. For Anthropic models, fresh input tokens are prompt tokens minus cache-read tokens; cache-read tokens are priced at 0.1 times and cache-creation tokens at 1.25 times the input price, and cache-creation tokens are reported separately from prompt tokens in these files. Prices are assumptions dated to the 2025 runs and are not read from the traces.
+
+\begin{table}[h]
+\caption{List prices applied (USD per million tokens)}\label{tab:prices}
+\centering\small
+\begin{tabular}{lrr}
+\toprule
+Model & Input & Output \\
+\midrule
+DeepSeek V3 & 1.25 & 1.25 \\
+GPT-4.1 & 2.00 & 8.00 \\
+Gemini 2.0 Flash & 0.10 & 0.40 \\
+Claude 3.7 Sonnet & 3.00 & 15.00 \\
+Claude Opus 4.1 & 15.00 & 75.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Validation against HAL totals and data-quality findings}
+Applied to HAL's reported (double-counted) usage, the prices reproduce HAL's reported total cost for the four USACO models and for DeepSeek V3 and Gemini 2.0 Flash on SWE-bench. Table~\ref{tab:val} compares HAL's reported totals with totals recomputed from unique calls.
+
+\begin{table}[h]
+\caption{USACO: reported versus recomputed totals}\label{tab:val}
+\centering\small
+\begin{tabular}{lrrrr}
+\toprule
+Model & HAL total (USD) & Recomputed (USD) & Token ratio & Accuracy \\
+\midrule
+DeepSeek V3 & 12.08 & 6.04 & 2.0 & 0.391 \\
+GPT-4.1 & 28.10 & 14.05 & 2.0 & 0.450 \\
+Gemini 2.0 Flash & 1.46 & 0.73 & 2.0 & 0.270 \\
+Claude 3.7 Sonnet & 38.70 & 38.70 & 1.0 & 0.293 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three further findings affect interpretation. First, the SWE-bench Opus 4.1 file reports \$131, and list prices applied to the recorded tokens give \$187; the reported total omits 2.96 million cache-creation tokens. Second, every SWE-bench run used a \$4 per-instance cost limit, and 64\% of Opus 4.1 tasks cost at least \$3.90, so those costs are censored. Third, HAL computes leaderboard cost without caching benefits, so the same run can carry different costs in different HAL views. HAL's USACO page carries a known-issue notice dated 5 October 2026 about the double counting.
+
+\subsection{Per-task cost shape}
+The 90th-to-50th percentile cost ratio is 1.26 (Claude 3.7 Sonnet), 1.29 (Gemini 2.0 Flash), 1.66 (GPT-4.1) and 1.74 (DeepSeek V3) on USACO, where the agent makes about two model calls per task. On SWE-bench it is 1.05 (Opus 4.1, censored), 2.04 (DeepSeek V3) and 11.77 (Gemini 2.0 Flash). Rank correlation of per-task cost across models is 0.30--0.50 on USACO (307 tasks in common) and 0.17--0.28 on SWE-bench (50 tasks).
+
+\section{Source register and evidence for the failure mechanisms}
+\subsection{Source register}
+Table~\ref{tab:sources} lists the sources behind the qualitative synthesis. ``Type'' distinguishes the kind of claim each source can support. The accessed column is to be completed for each source before submission; the dates of the documents themselves are as cited in the paper.
+
+\begin{longtable}{p{2.3cm}p{3.5cm}p{2.2cm}p{4.4cm}p{1.8cm}}
+\caption{Source register}\label{tab:sources}\\
+\toprule
+Key & Source & Type & Used for & Accessed \\
+\midrule
+\endfirsthead
+\toprule
+Key & Source & Type & Used for & Accessed \\
+\midrule
+\endhead
+aws2026 & AWS Well-Architected, Agentic AI Lens (Jun.\ 10, 2026) & Provider documentation & M1--M6, M9; cost per task completion; tag taxonomy; trace IDs & [to fill] \\
+finout2026 & Finout, FinOps for AI agents (Apr.\ 27, 2026) & Vendor guidance & M1, M7 & [to fill] \\
+prefactor2026 & Prefactor, agent cost attribution (Jun.\ 13, 2026) & Vendor guidance & Table I (platform practice) & [to fill] \\
+credyt2026 & Credyt, per-task attribution (Jul.\ 7, 2026) & Vendor-authored & Attribution as engineering work & [to fill] \\
+ibm2026, apptio2026 & IBM Newsroom (Aug.\ 6, 2026); Apptio case study & Vendor documentation & Table I (enterprise TCO suite); M8 & [to fill] \\
+focus2026 & FinOps Foundation, FOCUS v1.4, v1.5 plan & Standards body & Table I; token-field alignment (v1.5 unratified) & [to fill] \\
+tbm2026 & TBM Council, Taxonomy 5.0 and TBM for AI & Standards body & Table I & [to fill] \\
+finopsue & FinOps Foundation, unit economics & Standards body & Unit economics practice & [to fill] \\
+gartner2025 & Gartner press release (Jun.\ 25, 2025) & Analyst forecast & Introduction (project cancellation forecast) & [to fill] \\
+angelo2026 & Fortune (May 26, 2026) & Press & Introduction; M4, M8 & [to fill] \\
+openai2026 & OpenAI API deprecations policy & Provider documentation & Drift timing & [to fill] \\
+epoch2025 & Epoch AI data insight & Empirical & Price decline, 9$\times$--900$\times$ per year & [to fill] \\
+gundlach2025 & arXiv:2511.23455 & Empirical & Price decline, 5--10$\times$ per year & [to fill] \\
+bai2026 & arXiv:2604.22750 & Empirical & Token variance; self-prediction; accuracy at intermediate spend & [to fill] \\
+casey2026 & arXiv:2604.27082 & Empirical & Migration cost; model deprecation cadence & [to fill] \\
+kapoor2025 & arXiv:2510.11977 & Empirical & HAL traces & 11 Oct 2026 (traces) \\
+gao2020, aace118 & GAO-20-195G; AACE RP 118R-21 & Costing guidance & Budget at a stated confidence level; limits of estimate ranging & [to fill] \\
+martens2012 & Hawaii Int.\ Conf.\ System Sciences, 2012 & Peer-reviewed & Base TCO model & --- \\
+\bottomrule
+\end{longtable}
+
+The Bai et al.\ code repository (https://github.com/LongjuBai/agent\_token\_consumption\_analysis) was checked on 13 October 2026. It contains analysis scripts and prompt templates and does not contain the trajectories or per-task cost data.
+
+\subsection{Evidence behind each mechanism}
+Each mechanism is listed only when at least one source states it. Table~\ref{tab:mech} gives the statement relied on and the type of evidence. Provider and vendor statements are descriptions of practice and do not measure how often a problem occurs.
+
+\begin{longtable}{p{0.8cm}p{3.6cm}p{6.4cm}p{3.2cm}}
+\caption{Mechanism, statement relied on, and evidence type}\label{tab:mech}\\
+\toprule
+ & Mechanism & Statement relied on (source) & Evidence type \\
+\midrule
+\endfirsthead
+\toprule
+ & Mechanism & Statement relied on (source) & Evidence type \\
+\midrule
+\endhead
+M1 & Billing grain differs from spend grain & Costs span reasoning cycles, multi-agent workflows and tool calls that standard billing cannot capture (aws2026); consolidated invoice lines are a structural gap (finout2026) & Provider and vendor documentation \\
+M2 & Tagging discipline degrades & Tag taxonomies exist on paper but are applied inconsistently, which breaks per-agent attribution (aws2026) & Provider documentation \\
+M3 & No trace propagation across agents & Without a workflow trace ID, workflows are analyzed one agent at a time and orchestration cost is inflated unnoticed (aws2026) & Provider documentation \\
+M4 & Cost and value recorded separately; no baseline & ROI practice requires the manual-process baseline (aws2026); usage not linked to useful features (angelo2026) & Provider documentation; press report \\
+M5 & Detection slow and generic & Overruns found through monthly bills and heuristic 2$\sigma$/3$\sigma$ thresholds without cited empirical basis (aws2026) & Provider documentation \\
+M6 & Optimization needs quality data & A cheaper workflow that degrades quality may cost more in business terms (aws2026); accuracy peaks at intermediate spend (bai2026) & Provider documentation; empirical study \\
+M7 & Prices and allocation rules become outdated & Monthly model retirement cadence (finout2026); about 12-month proprietary-model deprecation (casey2026); price decline of 9$\times$--900$\times$ per year (epoch2025) & Vendor guidance; empirical studies \\
+M8 & Incentives and decentralized adoption & Internal usage leaderboard preceded budget exhaustion (angelo2026); five teams asked to build the same chatbot (apptio2026) & Press report; vendor case study; partly our synthesis \\
+M9 & Solutions are vendor-specific & AWS guidance is expressed in AWS services and did not mention FOCUS in the text searched; platforms use proprietary allocation logic (aws2026, finout2026) & Provider and vendor documentation; partly our synthesis \\
+\bottomrule
+\end{longtable}
+
+\section{Evaluation protocol history and reproduction}
+\subsection{Protocol history}
+Table~\ref{tab:hist} records what was specified when. The protocol and amendments were fixed before any real-data run. The recalibration test was added after the first results.
+
+\begin{table}[h]
+\caption{Status of each evaluation component}\label{tab:hist}
+\centering\small
+\begin{tabular}{p{4.8cm}p{3.6cm}p{6.4cm}}
+\toprule
+Component & Status & Reading \\
+\midrule
+E1, same-mix coverage (four budgets, $n\in\{10,100\}$, 80\% and 90\% levels) & Pre-specified; amended 11 Oct 2026 before any real-data run & Primary evidence for RQ3 \\
+E1, shifted-mix coverage & Pre-specified; no threshold & Sensitivity to a change in task mix \\
+E1c, recalibration after a shift & Post hoc & Exploratory \\
+Repeat-run variability & Not executed (no repeat-run data) & Unresolved \\
+Reference-class variant & Not executed & No evidence \\
+E1b, price-path band test & Not executed & No evidence \\
+E2, mapping completeness; E3, practitioner review & Not executed & Planned \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The amendments of 11 October 2026 were the addition of the 80th percentile, the addition of the reference-class variant and the removal of $n=1000$. The pre-specified criterion is coverage within $\pm3$ points of nominal on the unshifted split for the two-level bootstrap budget.
+
+\subsection{Budget methods}
+For a batch of $n$ tasks, with calibration task costs $c_i$, mean $\bar c$ and standard deviation $s$:
+(a) mean budget $n\bar{c}$;
+(b) normal budget $n\bar{c}+z_q s\sqrt{n}$;
+(c) resampled-quantile budget: draw $B=1000$ batches of $n$ tasks with replacement from the calibration tasks (one random run per task), and take the order statistic of rank $\lceil (B+1)q\rceil$ of the batch totals;
+(d) two-level budget: as (c), but each batch first resamples the calibration tasks with replacement and then draws $n$ tasks from that resample.
+Coverage is the share of 1000 resampled test batches whose total does not exceed the budget. Each setting averages 20 random splits (unshifted: 153 calibration and 154 test tasks of 307). The shifted split calibrates on the cheaper half of the groups ranked by mean cost and tests on the costlier half. The per-task cap is the split-conformal quantile of rank $\lceil (m+1)q\rceil$ of $m$ calibration costs.
+
+\subsection{Reproduction}
+\begin{enumerate}\itemsep0pt
+\item Install Python 3.10 or later with numpy 2.2.6 and pandas 2.3.3.
+\item Run \texttt{bash run\_all.sh}. It writes results to \texttt{out/}, takes under a minute, and exits with an error if any regenerated result differs from the released file.
+\item Read \texttt{out/summary.txt} for every number quoted in the pilot section and \texttt{out/casestudy\_output.txt} for the case-study sensitivity values.
+\item To rebuild the per-task tables from the original traces, follow the README: download the files listed in the provenance note, decrypt them with HAL's published procedure, and run the extraction scripts.
+\end{enumerate}
+The seed is fixed at 20261004 in every script. The HAL traces are not redistributed.
+
+\end{document}

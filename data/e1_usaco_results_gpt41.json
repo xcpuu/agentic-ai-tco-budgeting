@@ -1,0 +1,262 @@
+{
+ "source": "hal-traces/e1_usaco_input_gpt41.csv",
+ "seed": 20261004,
+ "results": [
+  {
+   "scenario": "unshifted",
+   "method": "mean",
+   "n": 10,
+   "coverage": 0.567,
+   "coverage_sd": 0.157,
+   "rel_excess_when_exceeded": 0.083,
+   "bound_over_mean": 1.0
+  },
+  {
+   "scenario": "unshifted",
+   "method": "normal@80",
+   "n": 10,
+   "coverage": 0.826,
+   "coverage_sd": 0.104,
+   "rel_excess_when_exceeded": 0.054,
+   "bound_over_mean": 1.092
+  },
+  {
+   "scenario": "unshifted",
+   "method": "resampled-quantile@80",
+   "n": 10,
+   "coverage": 0.829,
+   "coverage_sd": 0.103,
+   "rel_excess_when_exceeded": 0.053,
+   "bound_over_mean": 1.093
+  },
+  {
+   "scenario": "unshifted",
+   "method": "two-level@80",
+   "n": 10,
+   "coverage": 0.833,
+   "coverage_sd": 0.1,
+   "rel_excess_when_exceeded": 0.054,
+   "bound_over_mean": 1.095
+  },
+  {
+   "scenario": "unshifted",
+   "method": "normal@90",
+   "n": 10,
+   "coverage": 0.91,
+   "coverage_sd": 0.07,
+   "rel_excess_when_exceeded": 0.043,
+   "bound_over_mean": 1.14
+  },
+  {
+   "scenario": "unshifted",
+   "method": "resampled-quantile@90",
+   "n": 10,
+   "coverage": 0.91,
+   "coverage_sd": 0.071,
+   "rel_excess_when_exceeded": 0.043,
+   "bound_over_mean": 1.14
+  },
+  {
+   "scenario": "unshifted",
+   "method": "two-level@90",
+   "n": 10,
+   "coverage": 0.92,
+   "coverage_sd": 0.063,
+   "rel_excess_when_exceeded": 0.041,
+   "bound_over_mean": 1.148
+  },
+  {
+   "scenario": "unshifted",
+   "method": "mean",
+   "n": 100,
+   "coverage": 0.623,
+   "coverage_sd": 0.332,
+   "rel_excess_when_exceeded": 0.027,
+   "bound_over_mean": 1.0
+  },
+  {
+   "scenario": "unshifted",
+   "method": "normal@80",
+   "n": 100,
+   "coverage": 0.796,
+   "coverage_sd": 0.24,
+   "rel_excess_when_exceeded": 0.02,
+   "bound_over_mean": 1.029
+  },
+  {
+   "scenario": "unshifted",
+   "method": "resampled-quantile@80",
+   "n": 100,
+   "coverage": 0.794,
+   "coverage_sd": 0.242,
+   "rel_excess_when_exceeded": 0.02,
+   "bound_over_mean": 1.029
+  },
+  {
+   "scenario": "unshifted",
+   "method": "two-level@80",
+   "n": 100,
+   "coverage": 0.831,
+   "coverage_sd": 0.215,
+   "rel_excess_when_exceeded": 0.016,
+   "bound_over_mean": 1.037
+  },
+  {
+   "scenario": "unshifted",
+   "method": "normal@90",
+   "n": 100,
+   "coverage": 0.867,
+   "coverage_sd": 0.191,
+   "rel_excess_when_exceeded": 0.013,
+   "bound_over_mean": 1.044
+  },
+  {
+   "scenario": "unshifted",
+   "method": "resampled-quantile@90",
+   "n": 100,
+   "coverage": 0.864,
+   "coverage_sd": 0.194,
+   "rel_excess_when_exceeded": 0.013,
+   "bound_over_mean": 1.044
+  },
+  {
+   "scenario": "unshifted",
+   "method": "two-level@90",
+   "n": 100,
+   "coverage": 0.915,
+   "coverage_sd": 0.141,
+   "rel_excess_when_exceeded": 0.009,
+   "bound_over_mean": 1.057
+  },
+  {
+   "scenario": "shifted",
+   "method": "mean",
+   "n": 10,
+   "coverage": 0.126,
+   "coverage_sd": 0.012,
+   "rel_excess_when_exceeded": 0.163,
+   "bound_over_mean": 1.0
+  },
+  {
+   "scenario": "shifted",
+   "method": "normal@80",
+   "n": 10,
+   "coverage": 0.364,
+   "coverage_sd": 0.016,
+   "rel_excess_when_exceeded": 0.104,
+   "bound_over_mean": 1.092
+  },
+  {
+   "scenario": "shifted",
+   "method": "resampled-quantile@80",
+   "n": 10,
+   "coverage": 0.363,
+   "coverage_sd": 0.024,
+   "rel_excess_when_exceeded": 0.104,
+   "bound_over_mean": 1.092
+  },
+  {
+   "scenario": "shifted",
+   "method": "two-level@80",
+   "n": 10,
+   "coverage": 0.371,
+   "coverage_sd": 0.024,
+   "rel_excess_when_exceeded": 0.102,
+   "bound_over_mean": 1.095
+  },
+  {
+   "scenario": "shifted",
+   "method": "normal@90",
+   "n": 10,
+   "coverage": 0.519,
+   "coverage_sd": 0.013,
+   "rel_excess_when_exceeded": 0.082,
+   "bound_over_mean": 1.141
+  },
+  {
+   "scenario": "shifted",
+   "method": "resampled-quantile@90",
+   "n": 10,
+   "coverage": 0.525,
+   "coverage_sd": 0.026,
+   "rel_excess_when_exceeded": 0.082,
+   "bound_over_mean": 1.142
+  },
+  {
+   "scenario": "shifted",
+   "method": "two-level@90",
+   "n": 10,
+   "coverage": 0.538,
+   "coverage_sd": 0.026,
+   "rel_excess_when_exceeded": 0.08,
+   "bound_over_mean": 1.146
+  },
+  {
+   "scenario": "shifted",
+   "method": "mean",
+   "n": 100,
+   "coverage": 0.0,
+   "coverage_sd": 0.0,
+   "rel_excess_when_exceeded": 0.134,
+   "bound_over_mean": 1.0
+  },
+  {
+   "scenario": "shifted",
+   "method": "normal@80",
+   "n": 100,
+   "coverage": 0.002,
+   "coverage_sd": 0.001,
+   "rel_excess_when_exceeded": 0.102,
+   "bound_over_mean": 1.029
+  },
+  {
+   "scenario": "shifted",
+   "method": "resampled-quantile@80",
+   "n": 100,
+   "coverage": 0.002,
+   "coverage_sd": 0.001,
+   "rel_excess_when_exceeded": 0.102,
+   "bound_over_mean": 1.029
+  },
+  {
+   "scenario": "shifted",
+   "method": "two-level@80",
+   "n": 100,
+   "coverage": 0.003,
+   "coverage_sd": 0.002,
+   "rel_excess_when_exceeded": 0.096,
+   "bound_over_mean": 1.035
+  },
+  {
+   "scenario": "shifted",
+   "method": "normal@90",
+   "n": 100,
+   "coverage": 0.007,
+   "coverage_sd": 0.003,
+   "rel_excess_when_exceeded": 0.086,
+   "bound_over_mean": 1.044
+  },
+  {
+   "scenario": "shifted",
+   "method": "resampled-quantile@90",
+   "n": 100,
+   "coverage": 0.008,
+   "coverage_sd": 0.003,
+   "rel_excess_when_exceeded": 0.086,
+   "bound_over_mean": 1.045
+  },
+  {
+   "scenario": "shifted",
+   "method": "two-level@90",
+   "n": 100,
+   "coverage": 0.015,
+   "coverage_sd": 0.006,
+   "rel_excess_when_exceeded": 0.078,
+   "bound_over_mean": 1.053
+  }
+ ],
+ "per_task_cap": {
+  "cap_usd": 0.071,
+  "heldout_coverage": 0.948
+ }
+}

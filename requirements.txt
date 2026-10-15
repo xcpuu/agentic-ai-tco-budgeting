@@ -1,0 +1,6 @@
+# Tested with Python 3.10.12
+numpy==2.2.6
+pandas==2.3.3
+# Only needed to re-extract per-call tokens from encrypted HAL traces (code/hal_stream_extract.py):
+ijson==3.5.1
+cryptography==50.0.1
